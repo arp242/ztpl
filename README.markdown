@@ -1,6 +1,6 @@
 ztpl contains functiosn to deal with Go's text/template and html/template.
 
-Import as `zgo.at/ztpl`; godoc: pkg.go.dev/zgo.at/ztpl
+Import as `zgo.at/ztpl`; API docs: https://godocs.io/zgo.at/ztpl
 
 What you can do with this:
 
