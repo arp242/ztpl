@@ -53,6 +53,9 @@ func visit(node Node, f func(Node, int) bool, depth int) {
 	case *RangeNode:
 		depth++
 		visitPipe(n.Pipe, f, depth)
+		if n.List != nil {
+			visitNodes(n.List.Nodes, f, depth)
+		}
 	case *WithNode:
 		depth++
 		visitPipe(n.Pipe, f, depth)
