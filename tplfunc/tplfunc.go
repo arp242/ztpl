@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"zgo.at/json"
+	"zgo.at/zstd/zstring"
 )
 
 // Add a new template function.
@@ -29,6 +30,7 @@ var FuncMap = map[string]interface{}{
 	"string":     String, // TODO: remove
 	"sub":        Sub,
 	"substr":     Substr,
+	"elide":      Elide,
 	"sum":        Sum,
 	"tformat":    Time,
 	"ucfirst":    UCFirst,
@@ -265,4 +267,9 @@ func Checkbox(current interface{}, name string) template.HTML {
 		<input type="checkbox" name="%s" id="%[1]s">
 		<input type="hidden" name="%[1]s" value="off">
 	`, template.HTMLEscapeString(name)))
+}
+
+// Elide a string to at most n characters.
+func Elide(s string, n int) string {
+	return zstring.ElideLeft(s, n)
 }
