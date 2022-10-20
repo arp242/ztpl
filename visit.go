@@ -1,16 +1,31 @@
-package parse
+package ztpl
 
 import (
 	"fmt"
 	"io"
 	"strings"
+	"text/template/parse"
 
 	"zgo.at/zstd/zstring"
 )
 
+// Parse a template and set the mode.
+func Parse(
+	name, text string,
+	mode parse.Mode,
+	leftDelim, rightDelim string,
+	funcs ...map[string]interface{},
+) (map[string]*parse.Tree, error) {
+	treeSet := make(map[string]*parse.Tree)
+	t := parse.New(name)
+	t.Mode = parse.SkipFuncCheck | parse.ParseComments
+	_, err := t.Parse(text, "{{", "}}", treeSet, funcs...)
+	return treeSet, err
+}
+
 // PrintTree prints the tree to w.
-func PrintTree(w io.Writer, node Node) {
-	Visit(node, func(n Node, depth int) bool {
+func PrintTree(w io.Writer, node parse.Node) {
+	Visit(node, func(n parse.Node, depth int) bool {
 		fmt.Fprint(w,
 			strings.Repeat("    ", depth),
 			zstring.AlignLeft(strings.TrimPrefix(fmt.Sprintf("%T", n), "*parse."), 30),
@@ -22,20 +37,20 @@ func PrintTree(w io.Writer, node Node) {
 // Visit every node and call f.
 //
 // Traverse in the node if the return value of f is true.
-func Visit(node Node, f func(Node, int) bool) {
+func Visit(node parse.Node, f func(parse.Node, int) bool) {
 	visit(node, f, 0)
 }
 
-func visit(node Node, f func(Node, int) bool, depth int) {
+func visit(node parse.Node, f func(parse.Node, int) bool, depth int) {
 	if !f(node, depth) {
 		return
 	}
 
 	switch n := node.(type) {
-	case *ListNode:
+	case *parse.ListNode:
 		depth++
 		visitNodes(n.Nodes, f, depth)
-	case *IfNode:
+	case *parse.IfNode:
 		depth++
 		visitPipe(n.Pipe, f, depth)
 		if n.List != nil {
@@ -44,37 +59,37 @@ func visit(node Node, f func(Node, int) bool, depth int) {
 		if n.ElseList != nil {
 			visitNodes(n.ElseList.Nodes, f, depth)
 		}
-	case *CommandNode:
+	case *parse.CommandNode:
 		depth++
 		visitNodes(n.Args, f, depth)
-	case *ActionNode:
+	case *parse.ActionNode:
 		depth++
 		visitPipe(n.Pipe, f, depth)
-	case *RangeNode:
+	case *parse.RangeNode:
 		depth++
 		visitPipe(n.Pipe, f, depth)
 		if n.List != nil {
 			visitNodes(n.List.Nodes, f, depth)
 		}
-	case *WithNode:
+	case *parse.WithNode:
 		depth++
 		visitPipe(n.Pipe, f, depth)
-	case *TemplateNode:
+	case *parse.TemplateNode:
 		depth++
 		visitPipe(n.Pipe, f, depth)
-	case *PipeNode:
+	case *parse.PipeNode:
 		depth++
 		visitPipe(n, f, depth)
 	}
 }
 
-func visitNodes(n []Node, f func(Node, int) bool, depth int) {
+func visitNodes(n []parse.Node, f func(parse.Node, int) bool, depth int) {
 	for _, nn := range n {
 		visit(nn, f, depth)
 	}
 }
 
-func visitPipe(n *PipeNode, f func(Node, int) bool, depth int) {
+func visitPipe(n *parse.PipeNode, f func(parse.Node, int) bool, depth int) {
 	if n == nil {
 		return
 	}

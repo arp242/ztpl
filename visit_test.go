@@ -1,12 +1,13 @@
-package parse
+package ztpl
 
 import (
 	"os"
 	"testing"
+	"text/template/parse"
 )
 
-func mktree(t *testing.T, test string) *Tree {
-	tree, err := Parse("", test, ParseRelaxFunctions, "{{", "}}")
+func mktree(t *testing.T, test string) *parse.Tree {
+	tree, err := Parse("", test, parse.SkipFuncCheck, "{{", "}}")
 	if err != nil {
 		t.Fatal(err)
 	}

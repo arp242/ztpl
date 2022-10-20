@@ -4,16 +4,6 @@ Import as `zgo.at/ztpl`; API docs: https://godocs.io/zgo.at/ztpl
 
 What you can do with this:
 
-- The `parse` subpackage is a copy/fork of `text/template/parse`; the default
-  makes it impossible to write tooling, as it will [error out on undefined
-  functions][f]. This changes `Parse()` to accept a `Mode`, and you can add
-  `ParseRelaxFunctions` to not error out.
-
-  Also adds some other methods to facilitate the writing of tooling for
-  templates.
-
-  [f]: https://github.com/golang/go/issues/22538
-
 - You can set up templates with `ztpl.Init()`, which can then be reloaded from
   the filesystem with `ztpl.Reload()`, e.g. with github.com/teamwork/reload:
 
