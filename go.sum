@@ -1,4 +1,2 @@
-zgo.at/json v0.0.0-20200627042140-d5025253667f h1:o4XL0oDtAzxN+mkVCti8MYz5nLNfbrl17I78rqLWQrk=
-zgo.at/json v0.0.0-20200627042140-d5025253667f/go.mod h1:DUuNIRpNC7/cup+Gy0qhwQEjjlLFXXRZ04VnVv9bf3E=
 zgo.at/zstd v0.0.0-20221013104704-16fa49fadc62 h1:2YmbyyIJEC9yIVDGfuG/M7qAmHh+tgRKn4Lu/Iot3AQ=
 zgo.at/zstd v0.0.0-20221013104704-16fa49fadc62/go.mod h1:o/Q8+EtSahHnfkbB3t8wXE0FnoDTmJ0sBDlzezv9XeM=

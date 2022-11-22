@@ -31,12 +31,12 @@ What you can do with this:
 
 TODO:
 
-- Proper coverage support, now that we can forked the parse package.
+- Proper coverage support.
 
 - Compile templates to Go code. Especially things like tight loops are
   surprisingly slow.
 
 - A template format tool, like the (unfinished) https://github.com/gotpl/gtfmt
 
-Alhough, maybe it makes more sense to use
+Although, maybe it makes more sense to use
 https://github.com/valyala/quicktemplate or https://github.com/a-h/templ

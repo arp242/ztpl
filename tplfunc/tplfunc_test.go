@@ -1,192 +1,55 @@
 package tplfunc
 
 import (
-	"errors"
-	"fmt"
-	"html/template"
+	"bytes"
 	"testing"
-
-	"zgo.at/zstd/ztest"
+	"text/template"
 )
 
-func TestMap(t *testing.T) {
-	tests := []struct {
-		in   []interface{}
-		want map[string]interface{}
-	}{
-		{nil, map[string]interface{}{}},
-		{[]interface{}{"a", "b"}, map[string]interface{}{"a": "b"}},
-		{[]interface{}{"a", "b", "c", 42}, map[string]interface{}{"a": "b", "c": 42}},
+func mktpl(t *testing.T, text string, data any) string {
+	t.Helper()
+
+	tpl, err := template.New("").Option("missingkey=error").Funcs(FuncMap).Parse(text)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	for i, tt := range tests {
-		t.Run(fmt.Sprintf("%v", i), func(t *testing.T) {
-			out := Map(tt.in...)
-			if d := ztest.Diff(fmt.Sprintf("%+v", out), fmt.Sprintf("%+v", tt.want)); d != "" {
-				t.Errorf(d)
-			}
-		})
+	have := new(bytes.Buffer)
+	err = tpl.Execute(have, data)
+	if err != nil {
+		t.Fatal(err)
 	}
+
+	return have.String()
 }
 
-func TestString(t *testing.T) {
+func TestMisc(t *testing.T) {
+	s := "str"
+	i := 42
+	var n *int
 	tests := []struct {
-		in   interface{}
+		tpl  string
 		want string
+		data any
 	}{
-		{"a", "a"},
-		{rune('a'), "97"},
-		{42, "42"},
-		{[]byte("abc"), "[97 98 99]"},
-		{true, "true"},
-		{[]string{"a", "b"}, "[a b]"},
-	}
+		{`{{map "k" 5 "k2" "q"}}`, `map[k:5 k2:q]`, nil},
+		{`{{map .k .v}}`, `map[key:val]`, map[string]any{"k": "key", "v": "val"}},
 
-	for i, tt := range tests {
-		t.Run(fmt.Sprintf("%v", i), func(t *testing.T) {
-			out := String(tt.in)
-			if out != tt.want {
-				t.Errorf("\nout:  %#v\nwant: %#v\n", out, tt.want)
-			}
-		})
-	}
-}
+		{`{{deref "str"}}`, `str`, nil},
+		{`{{deref .ptr}}`, `str`, map[string]any{"ptr": &s}},
+		{`{{deref .ptr}}`, `42`, map[string]any{"ptr": &i}},
+		{`{{deref .ptr}}`, `0`, map[string]any{"ptr": n}},
 
-func TestNumber(t *testing.T) {
-	tests := []struct {
-		in    int
-		inSep rune
-		want  string
-	}{
-		{999, 0x2009, "999"},
-		{1000, 0x2009, "1 000"},
-		{20000, ',', "20,000"},
-		{300000, '.', "300.000"},
-		{4987654, '\'', "4'987'654"},
-		{4987654, 0x00, "4987654"},
-		{4987654, 0x01, "4987654"},
-		// Indian, TODO
-		// https://en.wikipedia.org/wiki/Indian_numbering_system
-		// {4987654, 0x01, "49,87,654"},
-		// {54987654, 0x01, "5,49,87,654"},
-	}
-
-	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%v", tt.in), func(t *testing.T) {
-			out := Number(tt.in, tt.inSep)
-			if out != tt.want {
-				t.Errorf("\nout:  %#v\nwant: %#v\n", out, tt.want)
-			}
-		})
-	}
-}
-
-func TestArithmetic(t *testing.T) {
-	tests := []struct {
-		f    func(int, int, ...int) int
-		in   []int
-		want int
-	}{
-		{Sum, []int{2, 1}, 3},
-		{Sum, []int{2, 2, 1}, 5},
-		{Sum, []int{2, 2, -4}, 0},
-
-		{Sub, []int{2, 1}, 1},
-		{Sub, []int{2, 2, 1}, -1},
-		{Sub, []int{2, 2, -5}, 5},
-
-		{Mult, []int{2, 2}, 4},
-		{Mult, []int{2, 2, 2}, 8},
-
-		//{Div, []int{8, 2}, 4},
-		//{Div, []int{8, 2, 2}, 2},
-	}
-
-	for i, tt := range tests {
-		t.Run(fmt.Sprintf("%v", i), func(t *testing.T) {
-			out := tt.f(tt.in[0], tt.in[1], tt.in[2:]...)
-			if out != tt.want {
-				t.Errorf("\nout:  %#v\nwant: %#v\n", out, tt.want)
-			}
-		})
-	}
-}
-
-func TestOptionValue(t *testing.T) {
-	tests := []struct {
-		current, value, want string
-	}{
-		{"a", "a", `value="a" selected`},
-		{"", "a", `value="a"`},
-		{"x", "a", `value="a"`},
-		{"a&'a", "a&'a", `value="a&amp;&#39;a" selected`},
-	}
-
-	for i, tt := range tests {
-		t.Run(fmt.Sprintf("%v", i), func(t *testing.T) {
-			out := OptionValue(tt.current, tt.value)
-			want := template.HTMLAttr(tt.want)
-			if out != want {
-				t.Errorf("\nout:  %#v\nwant: %#v\n", out, want)
-			}
-		})
-	}
-}
-
-func TestUCFirst(t *testing.T) {
-	tests := []struct {
-		in, want string
-	}{
-		{"hello", "Hello"},
-		{"helLo", "Hello"},
-		{"€elLo", "€ello"},
-		{"łelLo", "Łello"},
-		{"语elLo", "语ello"},
+		{`{{if2 true "a" "b"}}`, `a`, nil},
+		{`{{if2 false "a" "b"}}`, `b`, nil},
 	}
 
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			got := UCFirst(tt.in)
-			if got != tt.want {
-				t.Errorf("\ngot:  %q\nwant: %q", got, tt.want)
+			have := mktpl(t, tt.tpl, tt.data)
+			if have != tt.want {
+				t.Errorf("\nhave: %s\nwant: %s\n", have, tt.want)
 			}
-		})
-	}
-}
-
-type str int
-
-func (str) String() string { return "<&>" }
-
-func TestUnsafe(t *testing.T) {
-	var b []byte
-
-	tests := []struct {
-		in   interface{}
-		want template.HTML
-	}{
-		{"", ""},
-		{"<x>", "<x>"},
-		{"<>", "<>"},
-		{[]byte("<>"), "<>"},
-		{b, ""},
-		{template.HTML("<>"), "<>"},
-		{str(0), "<&>"},
-		{errors.New("<>"), "<>"},
-	}
-
-	for _, tt := range tests {
-		t.Run("", func(t *testing.T) {
-			got := Unsafe(tt.in)
-			if got != tt.want {
-				t.Errorf("\ngot:  %q\nwant: %q", got, tt.want)
-			}
-			// if !reflect.DeepEqual(got, tt.want) {
-			// 	t.Errorf("\ngot:  %#v\nwant: %#v", got, tt.want)
-			// }
-			// if d := ztest.Diff(got, tt.want); d != "" {
-			// 	t.Errorf(d)
-			// }
 		})
 	}
 }
