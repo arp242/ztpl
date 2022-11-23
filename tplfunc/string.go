@@ -7,6 +7,25 @@ import (
 	"zgo.at/zstd/zstring"
 )
 
+// Cat/join any arguments.
+func Cat(args ...any) string {
+	b := new(strings.Builder)
+	for _, a := range args {
+		switch aa := a.(type) {
+		case string:
+			b.WriteString(aa)
+		case []byte:
+			b.WriteString(string(aa))
+
+		case []string:
+			b.WriteString(strings.Join(aa, ""))
+		default:
+			fmt.Fprintf(b, "%v", aa)
+		}
+	}
+	return b.String()
+}
+
 // String converts anything to a string.
 func String(v any) string { return fmt.Sprintf("%v", v) }
 

@@ -25,6 +25,7 @@ var FuncMap = template.FuncMap{
 	"has_suffix": HasSuffix,
 	"join":       strings.Join,
 	"ucfirst":    UCFirst,
+	"cat":        Cat,
 
 	// Misc
 	"deref": Deref,
