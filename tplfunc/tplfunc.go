@@ -12,12 +12,16 @@ func Add(name string, f any) { FuncMap[name] = f }
 
 // FuncMap contains all the template functions.
 var FuncMap = template.FuncMap{
-	"int":   Int,
-	"sum":   Sum,
-	"sub":   Sub,
-	"mult":  Mult,
-	"div":   Div,
-	"round": Round,
+	"int":    Int,
+	"sum":    Sum,
+	"sub":    Sub,
+	"mult":   Mult,
+	"div":    Div,
+	"round":  Round,
+	"abs":    Abs,
+	"is_inf": IsInf,
+	"min":    Min,
+	"max":    Max,
 
 	// Strings
 	"substr":     Substr,

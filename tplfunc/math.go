@@ -2,6 +2,7 @@ package tplfunc
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 )
@@ -126,7 +127,36 @@ func Div(n, n2 any, n3 ...any) any {
 	return r
 }
 
-func Round(n any, to int) any {
-	// TODO
+// Abs gets the absolute value of n.
+func Abs(n any) float64 {
+	return math.Abs(toFloat(n))
+}
+
+// IsInf reports if n is Inf.
+func IsInf(n float64) bool {
+	return math.IsInf(n, 0)
+}
+
+// Round n; if to is 0 it will round to nearest, <1 to floor, >1 to ceil.
+func Round(n any, to int) float64 {
+	r := toFloat(n)
+	switch {
+	case to > 0:
+		return math.Ceil(r)
+	case to < 0:
+		return math.Floor(r)
+	default:
+		return math.Round(r)
+	}
 	return 0
+}
+
+func Min(a, b any) float64 {
+	aa, bb := toFloat(a), toFloat(b)
+	return math.Min(aa, bb)
+}
+
+func Max(a, b any) float64 {
+	aa, bb := toFloat(a), toFloat(b)
+	return math.Max(aa, bb)
 }
