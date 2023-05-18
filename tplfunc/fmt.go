@@ -208,6 +208,4 @@ func Size(n any, format ...string) string {
 		bytes /= 1024
 	}
 	return fmt.Sprintf("%.1f%s", bytes*1024, units[i-1])
-
-	return ""
 }

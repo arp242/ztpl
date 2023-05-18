@@ -1,8 +1,48 @@
 package tplfunc
 
 import (
+	"strings"
 	"testing"
 )
+
+func TestInt(t *testing.T) {
+	tests := []struct {
+		in      any
+		want    int64
+		wantErr string
+	}{
+		{"5", 5, ""},
+		{[]byte("05"), 5, ""},
+		{5, 5, ""},
+		{5.2, 5, ""},
+		{5.9, 5, ""},
+		{[]int64{5}, 0, "unsupported type []int64"},
+		{"a5", 0, `strconv.ParseInt: parsing "a5": invalid syntax`},
+	}
+
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			if tt.wantErr != "" {
+				defer func() {
+					r := recover()
+					if r == nil {
+						t.Fatal("no error")
+						return
+					}
+					have := r.(error).Error()
+					if !strings.Contains(have, tt.wantErr) {
+						t.Errorf("wrong error\nhave: %q\nwant: %q", have, tt.want)
+					}
+				}()
+			}
+
+			have := Int(tt.in)
+			if have != tt.want {
+				t.Errorf("\nhave: %q\nwant: %q", have, tt.want)
+			}
+		})
+	}
+}
 
 func TestArithmetic(t *testing.T) {
 	i := 3

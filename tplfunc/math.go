@@ -3,6 +3,7 @@ package tplfunc
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 // Base the arithmetic on float64; they're safe for natural numbers up to 2^53,
@@ -43,6 +44,49 @@ func toFloat(n any) float64 {
 		return float64(nn)
 	default:
 		panic(fmt.Sprintf("tplfunc: unsupported type: %T", nn))
+	}
+}
+
+// Int converts any int, float, or string to an integer.
+//
+// Floats are always rounded down; strings and []byte is parsed as a base-10
+// number. Any other type will panic.
+func Int(n any) int64 {
+	switch nn := (n).(type) {
+	case float32:
+		return int64(nn)
+	case float64:
+		return int64(nn)
+	case int:
+		return int64(nn)
+	case int8:
+		return int64(nn)
+	case int16:
+		return int64(nn)
+	case int32:
+		return int64(nn)
+	case int64:
+		return int64(nn)
+	case uint:
+		return int64(nn)
+	case uint8:
+		return int64(nn)
+	case uint16:
+		return int64(nn)
+	case uint32:
+		return int64(nn)
+	case uint64:
+		return int64(nn)
+	case []byte:
+		return Int(string(nn))
+	case string:
+		num, err := strconv.ParseInt(nn, 10, 64)
+		if err != nil {
+			panic(fmt.Errorf("ztpl.Int: converting string: %w", err))
+		}
+		return num
+	default:
+		panic(fmt.Errorf("ztpl.Int: unsupported type %T", n))
 	}
 }
 
