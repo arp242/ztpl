@@ -209,3 +209,25 @@ func Size(n any, format ...string) string {
 	}
 	return fmt.Sprintf("%.1f%s", bytes*1024, units[i-1])
 }
+
+func Slug(s string) string {
+	var n strings.Builder
+	n.Grow(len(s))
+	didDash := false
+	for _, c := range s {
+		// All ASCII punctuation and control characters
+		if c <= '/' || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || (c >= '{' && c <= 0x7f) {
+			if !didDash {
+				didDash = true
+				n.WriteByte('-')
+			}
+		} else {
+			didDash = false
+			n.WriteRune(c)
+		}
+	}
+	if didDash {
+		return n.String()[:n.Len()-1]
+	}
+	return n.String()
+}

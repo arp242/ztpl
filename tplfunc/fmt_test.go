@@ -48,8 +48,12 @@ func TestFmt(t *testing.T) {
 
 		{`{{size 14}}`, "14.0", nil},
 		{`{{size 1444}}`, "1.4K", nil},
-
 		{`{{size 1444 "from=k"}}`, "1.4M", nil},
+
+		{`{{slug "hello, world"}}`, "hello-world", nil},
+		{`{{slug "hello, world!"}}`, "hello-world", nil},
+		{`{{slug "hëllø, wörłd"}}`, "hëllø-wörłd", nil},
+		{`{{"አማርኛ" | slug}}`, "አማርኛ", nil},
 	}
 
 	for _, tt := range tests {

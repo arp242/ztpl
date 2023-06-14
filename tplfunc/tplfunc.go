@@ -45,6 +45,7 @@ var FuncMap = template.FuncMap{
 	"time":         Time,
 	"duration":     Duration,
 	"size":         Size,
+	"slug":         Slug,
 }
 
 // Deref dereferences a pointer.
