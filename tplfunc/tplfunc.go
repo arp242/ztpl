@@ -12,6 +12,7 @@ func Add(name string, f any) { FuncMap[name] = f }
 
 // FuncMap contains all the template functions.
 var FuncMap = template.FuncMap{
+	// Math
 	"int":    Int,
 	"sum":    Sum,
 	"sub":    Sub,
@@ -33,9 +34,10 @@ var FuncMap = template.FuncMap{
 	"cat":        Cat,
 
 	// Misc
-	"deref": Deref,
-	"if2":   If2,
-	"map":   Map,
+	"deref":    Deref,
+	"if2":      If2,
+	"map":      Map,
+	"contains": Contains,
 
 	// Formatting
 	"json":         JSON,
@@ -89,4 +91,24 @@ func Map(values ...any) map[string]any {
 		dict[key] = values[i+1]
 	}
 	return dict
+}
+
+// Contains reports if the slice contains the element value find.
+func Contains(slice any, find any) bool {
+	// Can't use type parameters with text/template :-/
+	sliceV, findV := reflect.ValueOf(slice), reflect.ValueOf(find)
+
+	if !sliceV.IsValid() {
+		return false
+	}
+	if findV.Type() != sliceV.Type().Elem() {
+		panic(fmt.Sprintf("mismatched types: %s and %s", sliceV.Type(), findV.Type()))
+	}
+
+	for i, l := 0, sliceV.Len(); i < l; i++ {
+		if sliceV.Index(i).Equal(findV) {
+			return true
+		}
+	}
+	return false
 }

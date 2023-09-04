@@ -39,7 +39,7 @@ func TestStrings(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			have := mktpl(t, tt.tpl, tt.data)
+			have := mktpl(t, "", tt.tpl, tt.data)
 			if have != tt.want {
 				t.Errorf("\nhave: %s\nwant: %s\n", have, tt.want)
 			}
