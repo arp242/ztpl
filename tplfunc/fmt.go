@@ -146,7 +146,7 @@ func Duration(a any, format string) string {
 	return d.String()
 }
 
-func fact(unit byte) int {
+func fact(unit byte) uint64 {
 	switch unit {
 	case 'b':
 		return 1
