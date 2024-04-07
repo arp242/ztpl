@@ -5,6 +5,9 @@ import (
 	"reflect"
 	"strings"
 	"text/template"
+	"time"
+
+	"zgo.at/zstd/ztime"
 )
 
 // Add a new template function.
@@ -38,6 +41,8 @@ var FuncMap = template.FuncMap{
 	"if2":      If2,
 	"map":      Map,
 	"contains": Contains,
+	"before":   Before,
+	"after":    After,
 
 	// Formatting
 	"json":         JSON,
@@ -112,3 +117,9 @@ func Contains(slice any, find any) bool {
 	}
 	return false
 }
+
+// t is before tt.
+func Before(t time.Time, tt string) bool { return t.Before(ztime.FromString(tt)) }
+
+// t is after tt.
+func After(t time.Time, tt string) bool { return t.After(ztime.FromString(tt)) }
