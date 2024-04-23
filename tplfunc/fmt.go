@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"zgo.at/zstd/ztime"
 )
 
 // JSON prints any object as JSON.
@@ -108,6 +110,12 @@ func Time(a any, format string) string {
 			return ""
 		}
 		t = *tt
+	case string:
+		if tt == "now" {
+			t = time.Now()
+		} else {
+			t = ztime.FromString(tt)
+		}
 	default:
 		panic(fmt.Sprintf("time: unsupported type %T", tt))
 	}
