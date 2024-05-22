@@ -13,7 +13,7 @@ import (
 	textTemplate "text/template"
 
 	"zgo.at/zstd/zruntime"
-	"zgo.at/zstd/zstring"
+	"zgo.at/zstd/zslice"
 	"zgo.at/ztpl/internal"
 	"zgo.at/ztpl/tplfunc"
 )
@@ -82,18 +82,18 @@ func ExecuteBytes(name string, data interface{}) ([]byte, error) {
 //
 // This is mostly useful for tracking which templates are run from tests, e.g.:
 //
-//   func TestMain(m *testing.M) {
-//       ztpl.Trace(true)
-//       c := m.Run()
+//	func TestMain(m *testing.M) {
+//	    ztpl.Trace(true)
+//	    c := m.Run()
 //
-//       ran := ztpl.Trace(false)
-//       for _, t := range ztpl.List() {
-//           if _, ok := ran[t]; !ok {
-//               fmt.Println("didn't execute template", t)
-//           }
-//       }
-//       os.Exit(c)
-//   }
+//	    ran := ztpl.Trace(false)
+//	    for _, t := range ztpl.List() {
+//	        if _, ok := ran[t]; !ok {
+//	            fmt.Println("didn't execute template", t)
+//	        }
+//	    }
+//	    os.Exit(c)
+//	}
 //
 // Also see TestTemplateExecution(), which wraps this for convenient use.
 func Trace(on bool) internal.Trace {
@@ -113,10 +113,11 @@ var stderr io.Writer = os.Stderr
 //
 // Typical usage would be:
 //
-//   func TestMain(m *testing.M) {
-//       os.Exit(ztpl.TestTemplateExecution(m, "ignore_this.gohtml"))
-//   }
-//func TestTemplateExecution(m *testing.M, ignore ...string) int {
+//	func TestMain(m *testing.M) {
+//	    os.Exit(ztpl.TestTemplateExecution(m, "ignore_this.gohtml"))
+//	}
+//
+// func TestTemplateExecution(m *testing.M, ignore ...string) int {
 func TestTemplateExecution(m interface{ Run() int }, ignore ...string) int {
 	Trace(true)
 	c := m.Run()
@@ -137,7 +138,7 @@ func TestTemplateExecution(m interface{ Run() int }, ignore ...string) int {
 	}
 
 	ran := Trace(false).Names()
-	unrun := zstring.Difference(List(), ran, ignore)
+	unrun := zslice.Difference(List(), ran, ignore)
 	sort.Strings(unrun)
 	if len(unrun) == 0 {
 		return 0
