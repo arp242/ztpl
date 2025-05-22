@@ -2,6 +2,7 @@ package tplfunc
 
 import (
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
 	"text/template"
@@ -28,13 +29,14 @@ var FuncMap = template.FuncMap{
 	"max":    Max,
 
 	// Strings
-	"substr":     Substr,
-	"elide":      Elide,
-	"has_prefix": HasPrefix,
-	"has_suffix": HasSuffix,
-	"join":       strings.Join,
-	"ucfirst":    UCFirst,
-	"cat":        Cat,
+	"substr":       Substr,
+	"elide":        Elide,
+	"has_prefix":   HasPrefix,
+	"has_suffix":   HasSuffix,
+	"join":         strings.Join,
+	"ucfirst":      UCFirst,
+	"cat":          Cat,
+	"query_escape": url.QueryEscape,
 
 	// Misc
 	"deref":    Deref,
