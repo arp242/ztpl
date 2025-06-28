@@ -29,13 +29,14 @@ var FuncMap = template.FuncMap{
 	"max":    Max,
 
 	// Strings
+	"str":          String,
+	"cat":          Cat,
 	"substr":       Substr,
 	"elide":        Elide,
 	"has_prefix":   HasPrefix,
 	"has_suffix":   HasSuffix,
 	"join":         strings.Join,
 	"ucfirst":      UCFirst,
-	"cat":          Cat,
 	"query_escape": url.QueryEscape,
 
 	// Misc

@@ -147,7 +147,7 @@ func Duration(a any, format string) string {
 		}
 		d = *dd
 	default:
-		panic(fmt.Sprintf("time: unsupported type %T", dd))
+		panic(fmt.Sprintf("duration: unsupported type %T", dd))
 	}
 
 	// TODO
